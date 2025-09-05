@@ -1,9 +1,9 @@
-To be populated at a later date
+To be populated at a later date:
 
 The 2025 Web Development Bootcamp with Colt Steele. Fullstack webdev master project. 
 
-Web app that allows you to store and view and campgrounds around the US. The app covers the following:
-- Basic CRUD
+Web app that allows you to store and view campgrounds around the US. The app covers the following:
+- CRUD
 - Styling using Bootstrap CSS
 - MongoDB, Mongoose, Express etc.
 - Errors and Validating data
@@ -15,4 +15,3 @@ Web app that allows you to store and view and campgrounds around the US. The app
 - Adding cluster maps
 - Common security issues
 - Deploying
-
