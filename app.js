@@ -2,11 +2,12 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const Campground = require('./models/campground.js'); // requiring the model/collection
+const Campground = require('./models/campground.js');
+const Review = require('./models/review');
 const methodOverride = require('method-override');
 const catchAsync = require('./utils/catchAsync.js');
 const ExpressError = require('./utils/ExpressError.js');
-const { campgroundSchema } = require('./schemas.js');
+const { campgroundSchema, reviewSchema } = require('./schemas.js');
 
 // Connecting to the MongoDB and checking that it works.
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -45,6 +46,18 @@ const validateCampground = (req, res, next) => {
     }
 }
 
+// Data validation for the Review data
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
+
+
 // Basic route to get to the home page
 app.get('/', (req, res) => {
     res.render('home');
@@ -81,9 +94,9 @@ app.post('/campgrounds', validateCampground, catchAsync(async (req, res) => {
 // lets now add our show page which will eventually show the details of each page.
 
 app.get('/campgrounds/:id', catchAsync(async (req, res,) => {
-    const campground = await Campground.findById(req.params.id);
+    const campground = await Campground.findById(req.params.id).populate('reviews');
     res.render('campgrounds/show', { campground });
-}))
+}));
 
 // Editing an existing campground. Simple get request to get to the edit page
 
@@ -105,6 +118,25 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
 }))
+
+// Creating a new review, validating the data using JOI, adding an ID reference to the campground.
+app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+}))
+
+// Deleting a review
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
+}))
+
 
 // Error handler that will deal with all errors where we have an undefined URL. This makes use of the Express default error which has been extended with some new class items. This then gets passed on to the app.use middle shown below which then says what to do with those errors
 
