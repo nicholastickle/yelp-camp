@@ -1,0 +1,23 @@
+<!-- Partials that will only appear if we have a success or error flash message passed into our response route -->
+
+<!-- Success flash message... this checks if we have a success message. If we don't then that code doesn't appear -->
+
+<!-- These are dismissible alerts from bootstrap -->
+<% if(success && success.length) {%>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <!-- "success" will just be the message that we passed through with flash -->
+        <%= success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
+
+        <!-- Failure flash message... this checks if we have a success message. If we don't then that code doesn't appear -->
+
+        <!-- These are dismissible alerts from bootstrap -->
+        <% if(error && error.length) {%>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <!-- "error" will just be the message that we passed through with flash -->
+                <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <% } %>

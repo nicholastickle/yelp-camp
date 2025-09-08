@@ -14,7 +14,8 @@
 <body class="d-flex flex-column vh-100">
     <%- include('../partials/navbar')%>
         <main class="container mt-5">
-            <%- body %>
+            <%- include('../partials/flash')%>
+                <%- body %>
         </main>
         <%- include('../partials/footer')%>
 
@@ -26,31 +27,7 @@
                 crossorigin="anonymous"></script>
 </body>
 
-<!-- Script that is needed to run the Form validation when adding in a new Campground or editing an existing... this comes from https://getbootstrap.com/docs/5.3/forms/validation/ -->
-<script>
-    (function () {
-        'use strict'
-
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        const forms = document.querySelectorAll('.validated-form')
-
-        // Loop over them and prevent submission
-        Array.from(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
-</script>
-
-
-
-
+<!-- Script that is needed to run the Form validation when adding in a new Campground or editing an existing... this comes from https://getbootstrap.com/docs/5.3/forms/validation/  remember that this will be served with the public directory so you only need to specify the file path within the directory -->
+<script src='/javascripts/validateForms.js'></script>
 
 </html>
