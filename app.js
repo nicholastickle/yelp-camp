@@ -69,6 +69,10 @@ passport.deserializeUser(User.deserializeUser());
 
 // Using res.local to pass flash messages into each route
 app.use((req, res, next) => {
+
+    if(!['/login','/'].includes(req.originalUrl)){
+        req.session.returnTo = req.originalUrl;
+    }
     res.locals.currentUser = req.user; // This is used to switch components on and off in our views depending on whether or not the user is logged in.
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
