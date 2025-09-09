@@ -18,3 +18,5 @@ module.exports.reviewSchema = Joi.object({
         body: Joi.string().required()
     }).required()
 })
+
+// We don't need JOI for the username and password authentication as that is being handled by Passport

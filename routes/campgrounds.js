@@ -3,6 +3,7 @@ const router = express.Router();
 const catchAsync = require('../utils/catchAsync.js');
 const mongoose = require('mongoose');
 const { campgroundSchema } = require('../schemas.js');
+const { isLoggedIn } = require('../middleware');
 
 const ExpressError = require('../utils/ExpressError.js');
 const Campground = require('../models/campground.js');
@@ -28,13 +29,13 @@ router.get('/', catchAsync(async (req, res) => {
 
 // Rendering the page that will help to create a new campground
 
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
 })
 
 // Post request to add in a new campground
 
-router.post('/', validateCampground, catchAsync(async (req, res) => {
+router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
     // if (!req.body.campground) throw new ExpressError('Invalid Campground Data', 400);
     const campground = new Campground(req.body.campground); // This is different to what we have done previously, see the new.ejs page to see why we have done rew.body.campground. We don't have to do it this way
     await campground.save();
@@ -66,7 +67,7 @@ router.get('/:id', catchAsync(async (req, res) => {
 
 // Editing an existing campground. Simple get request to get to the edit page
 
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
 
     const { id } = req.params;
     // Check for valid ObjectId. This was not done by Colt. This is something I added to prevent a Cast Error
@@ -87,7 +88,7 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
 }))
 
 // The below put request is used to update the campground entry. Notice how spread has been used here for the first time as Colt used a different method for defining the name of the "title" and "location" in the edit.ejs file.
-router.put('/:id', validateCampground, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     req.flash('success', 'Successfully updated campground!');
@@ -95,7 +96,7 @@ router.put('/:id', validateCampground, catchAsync(async (req, res) => {
 }))
 
 // Deleting a campground
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     req.flash('success', 'Successfully deleted campground')

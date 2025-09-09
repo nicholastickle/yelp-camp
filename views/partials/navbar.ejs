@@ -11,6 +11,16 @@
                 <a class="nav-link" href="/campgrounds">Campgrounds</a>
                 <a class="nav-link" href="/campgrounds/new">New Campground</a>
             </div>
+            <!-- ml-auto pushes this div to the end of the Navbar -->
+            <div class="navbar-nav ms-auto">
+                <!-- currentUser gets passed into this partial using res.locals.currentUser. If there is no user that is logged in then currentUser is false -->
+                <% if(!currentUser) {%>
+                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-link" href="/register">Register</a>
+                    <% } else {%>
+                        <a class="nav-link" href="/logout">Logout</a>
+                        <% } %>
+            </div>
         </div>
     </div>
 </nav>
