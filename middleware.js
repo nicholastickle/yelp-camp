@@ -18,6 +18,7 @@ module.exports.storeReturnTo = (req, res, next) => {
     if (req.session.returnTo) {
         res.locals.returnTo = req.session.returnTo;
     }
+    console.log(res.locals.returnTo);
     next();
 }
 
@@ -47,7 +48,9 @@ module.exports.isReviewAuthor = async (req, res, next) => {
 
 // Data Validation middleware for checking server side data. Only need to do this when writing to the database... i.e. post, patch, put requests.
 module.exports.validateCampground = (req, res, next) => {
+  
     const { error } = campgroundSchema.validate(req.body); // syntax required from JOI
+    
     if (error) {
         // The error message doesn't appear in a why thats easily rendered so we need to use the array callback method below to fix that.
         const msg = error.details.map(el => el.message).join(',')

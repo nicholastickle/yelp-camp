@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -70,9 +74,14 @@ passport.deserializeUser(User.deserializeUser());
 // Using res.local to pass flash messages into each route
 app.use((req, res, next) => {
 
-    if(!['/login','/'].includes(req.originalUrl)){
+    // if(!['/login','/'].includes(req.originalUrl)){
+    //     req.session.returnTo = req.originalUrl;
+    // }
+    // Only store returnTo for GET requests to actual routes we care about
+    if (req.method === 'GET' && !req.originalUrl.startsWith('/.well-known') && !req.originalUrl.startsWith('/login')) {
         req.session.returnTo = req.originalUrl;
     }
+
     res.locals.currentUser = req.user; // This is used to switch components on and off in our views depending on whether or not the user is logged in.
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');

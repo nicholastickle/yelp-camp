@@ -47,7 +47,17 @@ const seedDB = async () => {
             author: "68c0718ade2be5812908d93d",
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`, // sample function as defined above to pick out a random entry from the array.
-            image: `https://picsum.photos/400?random=${Math.random()}`,
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/dugvm4rps/image/upload/v1758221512/YelpCamp/vkyvc7ivpxyqvag9sczl.jpg',
+                    filename: 'YelpCamp/vkyvc7ivpxyqvag9sczl',
+                },
+                {
+                    url: 'https://res.cloudinary.com/dugvm4rps/image/upload/v1758221511/YelpCamp/wlk23xbnqhjqry4pyy7j.jpg',
+                    filename: 'YelpCamp/wlk23xbnqhjqry4pyy7j',
+                }
+
+            ],
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolores vero perferendis laudantium, consequuntur voluptatibus nulla architecto, sit soluta esse iure sed labore ipsam a cum nihil atque molestiae deserunt!',
             price
         })
