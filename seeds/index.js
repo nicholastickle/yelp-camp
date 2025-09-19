@@ -40,7 +40,7 @@ const sample = array => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
     await Campground.deleteMany({}); // delete the existing data
-    for (let i = 0; i < 50; i++) { // For loop for generating 50 random entries
+    for (let i = 0; i < 400; i++) { // For loop for generating 50 random entries
         const random1000 = Math.floor(Math.random() * 1000); // There are 1000 cities in the cities.js file.
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
@@ -50,7 +50,10 @@ const seedDB = async () => {
             title: `${sample(descriptors)} ${sample(places)}`, // sample function as defined above to pick out a random entry from the array.
             geometry: {
                 type: "Point",
-                coordinates: [-113.1331, 47.0202]
+                coordinates: [
+                    cities[random1000].longitude,
+                    cities[random1000].latitude,
+                ]
             },
 
             images: [

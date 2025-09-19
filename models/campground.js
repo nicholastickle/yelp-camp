@@ -13,6 +13,8 @@ ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
+// This is to make sure that the virtuals are included when we convert the mongoose document to JSON. This is needed as we are using a virtual property for the popup on the map.
+const opts = { toJSON: { virtuals: true } };
 
 const CampgroundSchema = new Schema({
     title: String,
@@ -42,6 +44,12 @@ const CampgroundSchema = new Schema({
             ref: 'Review'
         }
     ]
+}, opts);
+
+CampgroundSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong><a href="/campgrounds/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 20)}...</p>`
 });
 
 // Mongoose middleware that looks to delete the reviews that are associated with the campground that we are deleting. We are stating "post" as this will be triggered after the campground is deleted. "doc" just refers to the campground that is being deleted.
