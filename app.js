@@ -13,10 +13,13 @@ const flash = require('connect-flash')
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
+const helmet = require('helmet');
 
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
+
+const mongoSanitize = require('express-mongo-sanitize');
 
 
 // Connecting to the MongoDB and checking that it works.
@@ -43,16 +46,21 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(mongoSanitize({
+    replaceWith: '_'
+}))
 
 
 // Configuring sessions
 const sessionConfig = {
+    name: 'session', // This is to change the name of the session from the default which is connect.sid. This is for security purposes
     secret: 'thisshouldbeabettersecret!', // this will be dealt with later on in .env variables
     resave: false, // standard template
     saveUninitialized: true, // standard template
     // Additional cookie data
     cookie: {
         httpOnly: true, // Standard security data
+        // secure: true, // This will ensure that the cookie is only sent over HTTPS. We won't be using this for now as we are in development mode and not using HTTPS. We will uncomment this when we go into production   
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // dates are measured in milliseconds. So we won't to let the cookie expire 1 week from now
         maxAge: 1000 * 60 * 60 * 24 * 7 // max age of the cookie which will be 1 week measured in milliseconds
     }
@@ -64,6 +72,55 @@ app.use(session(sessionConfig))
 // Implementing flash in all routes
 app.use(flash())
 
+// Using helmet for some basic security. This will set some headers to help protect our app. More configuration will be done later
+app.use(helmet());
+
+const scriptSrcUrls = [
+    "https://stackpath.bootstrapcdn.com/",
+    "https://api.tiles.mapbox.com/",
+    "https://api.mapbox.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdnjs.cloudflare.com/",
+    "https://cdn.jsdelivr.net",
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://api.mapbox.com/",
+    "https://api.tiles.mapbox.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://cdn.jsdelivr.net",
+];
+const connectSrcUrls = [
+    "https://api.mapbox.com/",
+    "https://a.tiles.mapbox.com/",
+    "https://b.tiles.mapbox.com/",
+    "https://events.mapbox.com/",
+];
+const fontSrcUrls = [];
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [],
+            connectSrc: ["'self'", ...connectSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://res.cloudinary.com/dugvm4rps/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
+                "https://images.unsplash.com/",
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        },
+    })
+);
+
+
 // Passport basic setup. "User" in this case refers to the user model
 app.use(passport.initialize());
 app.use(passport.session());
@@ -73,7 +130,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // Using res.local to pass flash messages into each route
 app.use((req, res, next) => {
-
+  
     // if(!['/login','/'].includes(req.originalUrl)){
     //     req.session.returnTo = req.originalUrl;
     // }
