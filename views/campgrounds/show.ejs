@@ -69,7 +69,7 @@
         <!-- Reviews section -->
 
         <div class="col-6">
-
+            <div id='map' style='width: 400px; height: 300px;'></div>
             <!-- Adding a new review -->
             <% if(currentUser){ %>
                 <h2>Leave a Review</h2>
@@ -126,3 +126,14 @@
                         <% } %>
         </div>
     </div>
+
+
+
+
+    <script>
+        const mapToken = '<%- process.env.MAPBOX_TOKEN %>';
+        const campground = <%- JSON.stringify(campground) %>
+    </script>
+
+
+    <script src="/javascripts/showPageMap.js"></script>

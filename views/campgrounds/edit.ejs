@@ -22,11 +22,7 @@
                         Looks good!
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label" for="image">Add Image</label>
-                    <input type="file" id="image" name="image" multiple>
 
-                </div>
                 <div class="mb-3">
                     <label class="form-label" for="price">Campground Price</label>
                     <div class="input-group">
@@ -50,6 +46,27 @@
                         Looks good!
                     </div>
                 </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Upload Additional Images
+                    </label>
+                    <input class="form-control form-control-sm" id="image" type="file" name="image" multiple>
+
+                </div>
+
+                <div class="mb-3">
+                    <% campground.images.forEach(function(img, i) { %>
+
+                        <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="">
+                        <div class="form-check-inline">
+                            <!-- // Adding in a checkbox to delete an image. By setting the name to deleteImages[] this will come through as an array in req.body. Any images that are checked will be in the array.  -->
+                            <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                        </div>
+                        <label for="image-<%=i%>">Delete?</label>
+                        <% })%>
+                </div>
+
+
+
                 <div class="mb-3">
                     <button class="btn btn-info">Update Campground</button>
                 </div>

@@ -2,17 +2,35 @@ const mongoose = require('mongoose')
 const Review = require('./review')
 const Schema = mongoose.Schema // Colt does this so that we can reference the Schema later on if we need to.
 
+// Creating a new schema for the images that will be uploaded to Cloudinary. This is a subdocument as it is part of the Campground model
+const ImageSchema = new Schema({
+    url: String,
+    filename: String
+});
+
+// This is a virtual property that will create a thumbnail version of the image that is uploaded to Cloudinary. This uses the Cloudinary functionality to resize the image. We use a function() instead of an arrow function as we need access to the "this" keyword which will refer to the particular image. 
+ImageSchema.virtual('thumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/w_200');
+});
+
+
 const CampgroundSchema = new Schema({
     title: String,
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     price: Number,
     description: String,
     location: String,
-    images: [
-        {
-            url: String,
-            filename: String
-        }
-    ],
+    images: [ImageSchema],
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'

@@ -44,9 +44,15 @@ const seedDB = async () => {
         const random1000 = Math.floor(Math.random() * 1000); // There are 1000 cities in the cities.js file.
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
+            // YOUR USER ID
             author: "68c0718ade2be5812908d93d",
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`, // sample function as defined above to pick out a random entry from the array.
+            geometry: {
+                type: "Point",
+                coordinates: [-113.1331, 47.0202]
+            },
+
             images: [
                 {
                     url: 'https://res.cloudinary.com/dugvm4rps/image/upload/v1758221512/YelpCamp/vkyvc7ivpxyqvag9sczl.jpg',
