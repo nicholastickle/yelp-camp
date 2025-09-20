@@ -47,7 +47,7 @@
                     </li>
                     <li class="list-group-item">Submitted by <%= campground.author.username%>
                     </li>
-                    <li class="list-group-item">$<%= campground.price%>/night</li>
+                    <li class="list-group-item">£<%= campground.price%>/night</li>
                 </ul>
                 <!-- The below if statement checks if the currentUser is equal to the author of the campground which will determine whether or not the below buttons will be displayed -->
                 <% if( currentUser && campground.author.equals(currentUser._id)) {%>
