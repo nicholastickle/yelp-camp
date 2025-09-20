@@ -14,6 +14,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const helmet = require('helmet');
+const MongoStore = require('connect-mongo');
 
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
@@ -21,9 +22,12 @@ const reviewRoutes = require('./routes/reviews');
 
 const mongoSanitize = require('express-mongo-sanitize');
 
+// The below is only used for development purposes.
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+
 
 // Connecting to the MongoDB and checking that it works.
-mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
+mongoose.connect(dbUrl, {
     // useNewUrlParser: true, // No longer need this
     // useCreateIndex: true, // No longer need this
     // useUnifiedTopology: true // No longer need this
@@ -50,14 +54,28 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }))
 
+const secret = process.env.SECRET;
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60, // time period in seconds. Use this to update the session only once in a 24 hour period. This is to prevent too many writes to the database which can be expensive on performance (called a Lazy session update)
+    crypto: {
+        secret: secret
+    }
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e)
+})
 
 // Configuring sessions
 const sessionConfig = {
     name: 'session', // This is to change the name of the session from the default which is connect.sid. This is for security purposes
-    secret: 'thisshouldbeabettersecret!', // this will be dealt with later on in .env variables
+    secret: secret, // this will be dealt with later on in .env variables
     resave: false, // standard template
     saveUninitialized: true, // standard template
     // Additional cookie data
+    store: store,
     cookie: {
         httpOnly: true, // Standard security data
         // secure: true, // This will ensure that the cookie is only sent over HTTPS. We won't be using this for now as we are in development mode and not using HTTPS. We will uncomment this when we go into production   
@@ -176,8 +194,9 @@ app.use((err, req, res, next) => {
 
 
 // Starting up the server
-app.listen(3000, () => {
-    console.log('serving on port 3000');
+const port = process.env.PORT;
+app.listen(port, () => {
+    console.log(`Serving on port ${port}`)
 })
 
 
